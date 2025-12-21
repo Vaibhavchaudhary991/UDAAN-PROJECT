@@ -6,10 +6,10 @@ const {
   updateCase
 } = require("../controllers/adminController");
 
-// View all cases
+// ✅ GET all cases
 router.get("/cases", getAllCases);
 
-// Update case status & comment
+// ✅ UPDATE case by trackingId
 router.put("/cases/track/:trackingId", updateCase);
 
 module.exports = router;

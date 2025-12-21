@@ -2,14 +2,17 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// SIGNUP
+// ======================
+// USER SIGNUP
+// ======================
 exports.signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
-    if (existingUser)
+    if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -17,31 +20,41 @@ exports.signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role: "user" // ✅ explicitly set
     });
 
-    res.status(201).json({ message: "Signup successful" });
+    res.status(201).json({
+      message: "Signup successful"
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// LOGIN
-// LOGIN
+// ======================
+// USER / ADMIN LOGIN
+// ======================
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
+    if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-    // ✅ FIXED JWT
+    // ✅ INCLUDE ROLE IN JWT
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -51,10 +64,43 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+// ======================
+// ADMIN LOGIN (FIXED ADMIN)
+// ======================
+exports.adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  // Match with .env credentials
+  if (
+    email !== process.env.ADMIN_EMAIL ||
+    password !== process.env.ADMIN_PASSWORD
+  ) {
+    return res.status(401).json({
+      message: "Invalid admin credentials"
+    });
+  }
+
+  // Generate admin JWT
+  const token = jwt.sign(
+    {
+      email,
+      role: "admin"
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+
+  res.json({
+    token,
+    role: "admin"
+  });
+};
+

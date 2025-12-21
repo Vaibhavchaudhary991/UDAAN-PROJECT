@@ -1,11 +1,21 @@
 import { useState } from "react";
 import api from "../../api/api";
-import { FaUser, FaMapMarkerAlt, FaBriefcase, FaFileAlt, FaPaperPlane, FaShieldAlt, FaLock } from "react-icons/fa";
+import {
+  FaUser,
+  FaMapMarkerAlt,
+  FaBriefcase,
+  FaFileAlt,
+  FaPaperPlane,
+  FaShieldAlt,
+  FaLock
+} from "react-icons/fa";
 
 export default function ReportCase() {
   const [form, setForm] = useState({
     childName: "",
-    location: "",
+    address: "",
+    city: "",
+    state: "",
     workType: "",
     description: ""
   });
@@ -22,14 +32,18 @@ export default function ReportCase() {
     setLoading(true);
 
     try {
-      const res = await api.post("/cases", form);
+      const res = await api.post("/cases", {
+        ...form,  
+      });
 
       setTrackingId(res.data.trackingId);
       alert("Case reported successfully");
 
       setForm({
         childName: "",
-        location: "",
+        address: "",
+        city: "",
+        state: "",
         workType: "",
         description: ""
       });
@@ -64,7 +78,7 @@ export default function ReportCase() {
                 <FaShieldAlt className="mr-3 text-red-600" />
                 Safe Reporting
               </h3>
-              
+
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start">
                   <div className="bg-red-100 p-2 rounded-lg mr-3">
@@ -73,24 +87,6 @@ export default function ReportCase() {
                   <div>
                     <h4 className="font-semibold text-gray-800">Confidential & Secure</h4>
                     <p className="text-sm text-gray-600">Your identity is protected</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-blue-100 p-2 rounded-lg mr-3">
-                    <FaPaperPlane className="text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800">Immediate Action</h4>
-                    <p className="text-sm text-gray-600">Case forwarded to NGOs within 24 hours</p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-green-100 p-2 rounded-lg mr-3">
-                    <FaUser className="text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800">Track Progress</h4>
-                    <p className="text-sm text-gray-600">Use tracking ID to monitor case status</p>
                   </div>
                 </li>
               </ul>
@@ -107,7 +103,8 @@ export default function ReportCase() {
           <div className="md:col-span-3">
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Child Name Field */}
+
+                {/* Child Name */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
                     <FaUser className="mr-2 text-blue-600" />
@@ -116,32 +113,60 @@ export default function ReportCase() {
                   <input
                     type="text"
                     name="childName"
-                    placeholder="Enter child's name or description"
                     value={form.childName}
                     onChange={handleChange}
                     required
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 hover:bg-gray-100"
+                    className="w-full p-4 border border-gray-300 rounded-xl bg-gray-50"
                   />
                 </div>
 
-                {/* Location Field */}
+                {/* Address */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
                     <FaMapMarkerAlt className="mr-2 text-red-600" />
-                    Location
+                    Area / Landmark
                   </label>
                   <input
                     type="text"
-                    name="location"
-                    placeholder="Street, Area, City, Landmark"
-                    value={form.location}
+                    name="address"
+                    value={form.address}
                     onChange={handleChange}
                     required
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 bg-gray-50 hover:bg-gray-100"
+                    className="w-full p-4 border border-gray-300 rounded-xl bg-gray-50"
                   />
                 </div>
 
-                {/* Work Type Field */}
+                {/* City */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={form.city}
+                    onChange={handleChange}
+                    required
+                    className="w-full p-4 border border-gray-300 rounded-xl bg-gray-50"
+                  />
+                </div>
+
+                {/* State */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={form.state}
+                    onChange={handleChange}
+                    required
+                    className="w-full p-4 border border-gray-300 rounded-xl bg-gray-50"
+                  />
+                </div>
+
+                {/* Work Type */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
                     <FaBriefcase className="mr-2 text-green-600" />
@@ -150,15 +175,14 @@ export default function ReportCase() {
                   <input
                     type="text"
                     name="workType"
-                    placeholder="Factory, Shop, Construction, Domestic Work, etc."
                     value={form.workType}
                     onChange={handleChange}
                     required
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-gray-50 hover:bg-gray-100"
+                    className="w-full p-4 border border-gray-300 rounded-xl bg-gray-50"
                   />
                 </div>
 
-                {/* Description Field */}
+                {/* Description */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
                     <FaFileAlt className="mr-2 text-purple-600" />
@@ -166,91 +190,32 @@ export default function ReportCase() {
                   </label>
                   <textarea
                     name="description"
-                    placeholder="Time of day, duration, condition of the child, any other observations..."
                     value={form.description}
                     onChange={handleChange}
                     rows="4"
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-gray-50 hover:bg-gray-100 resize-none"
+                    className="w-full p-4 border border-gray-300 rounded-xl bg-gray-50 resize-none"
                   />
                 </div>
 
-                {/* Submit Button */}
+                {/* Submit */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`
-                    w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300
-                    ${loading 
-                      ? 'bg-gray-400 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl'
-                    }
-                    text-white flex items-center justify-center
-                  `}
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 text-white font-semibold"
                 >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                      Processing Report...
-                    </>
-                  ) : (
-                    <>
-                      <FaPaperPlane className="mr-3" />
-                      Submit Case Report
-                    </>
-                  )}
+                  {loading ? "Submitting..." : "Submit Case Report"}
                 </button>
               </form>
 
-              {/* Success Message */}
+              {/* Tracking ID */}
               {trackingId && (
-                <div className="mt-8 animate-fade-in">
-                  <div className="bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-2xl p-8 shadow-lg">
-                    <div className="flex items-start">
-                      <div className="bg-green-100 p-3 rounded-full mr-4">
-                        <FaShieldAlt className="text-2xl text-green-600" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-green-800 mb-2">
-                          Case Reported Successfully!
-                        </h3>
-                        <p className="text-gray-700 mb-4">
-                          Thank you for taking action. Your report has been submitted and will be processed immediately.
-                        </p>
-                        
-                        <div className="bg-white rounded-xl p-6 mb-4">
-                          <p className="text-sm text-gray-600 mb-2">Your Tracking ID:</p>
-                          <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                            <code className="text-2xl font-bold text-blue-700 tracking-wider">
-                              {trackingId}
-                            </code>
-                            <button 
-                              onClick={() => navigator.clipboard.writeText(trackingId)}
-                              className="text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-2 rounded-lg transition-colors"
-                            >
-                              Copy ID
-                            </button>
-                          </div>
-                        </div>
-                        
-                        <p className="text-sm text-gray-600">
-                          <span className="font-semibold">Important:</span> Save this Tracking ID to check your case status in the Track section.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="mt-6 text-center">
+                  <p className="text-green-700 font-semibold">
+                    Tracking ID: {trackingId}
+                  </p>
                 </div>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Bottom Note */}
-        <div className="mt-12 text-center">
-          <div className="inline-block bg-blue-50 rounded-xl px-6 py-4 border border-blue-200">
-            <p className="text-gray-700">
-              <span className="font-semibold text-blue-700">Note:</span> All reports are treated with utmost confidentiality. 
-              False reporting may lead to legal action under relevant laws.
-            </p>
           </div>
         </div>
       </div>

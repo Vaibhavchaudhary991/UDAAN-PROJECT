@@ -25,19 +25,25 @@ export default function AdminLogin() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    try {
-      await api.post("/admin-auth/login", form);
-      alert("Admin login successful");
-      navigate("/admin/dashboard");
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
-    } finally {
-      setIsLoading(false);
+  e.preventDefault();
+  setIsLoading(true);
+
+  try {
+    const res = await api.post("/auth/admin/login", form);
+
+    // save token if backend sends one
+    if (res.data.token) {
+      localStorage.setItem("token", res.data.token);
     }
-  };
+
+    alert("Admin login successful");
+    navigate("/admin/dashboard");
+  } catch (err) {
+    alert(err.response?.data?.message || "Login failed");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-teal-800 flex items-center justify-center p-4">

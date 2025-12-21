@@ -1,8 +1,8 @@
+// backend/middleware/authMiddleware.js
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
   try {
-    // Expect header: Authorization: Bearer <token>
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -12,12 +12,9 @@ const authMiddleware = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach user info to request
-    req.user = decoded;
-
+    req.user = decoded; // { id, email, role }
     next();
   } catch (error) {
     return res.status(401).json({
