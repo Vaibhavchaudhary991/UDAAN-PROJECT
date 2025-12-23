@@ -25,7 +25,7 @@ export default function UserDashboard() {
               <div className="flex items-center mb-4">
                 <FaChild className="text-3xl mr-3" />
                 <h1 className="text-3xl md:text-5xl font-bold leading-tight">
-                  Udaan– Eradication of Child Labour
+                  – Eradication of Child Labour
                 </h1>
               </div>
               <p className="text-xl md:text-2xl mb-8 text-blue-100">
