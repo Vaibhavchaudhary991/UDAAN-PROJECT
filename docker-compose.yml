@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  # MongoDB Database (Development)
+  mongodb:
+    image: mongo:7.0
+    container_name: udaan-mongodb-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: udaan
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_dev:/data/db
+
+  # Backend API (Development)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: udaan-backend-dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      MONGO_URI: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-password}@mongodb:27017/udaan?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+    depends_on:
+      - mongodb
+
+  # Frontend App (Development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: udaan-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "3000:80" # Map to 3000 locally as well for convenience
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data_dev:
