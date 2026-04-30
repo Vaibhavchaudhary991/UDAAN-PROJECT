@@ -72,7 +72,7 @@ const CaseCard = ({ case: c, onUpdate }) => {
           <div className="text-sm text-gray-500 flex items-center">
             <FaCalendarAlt className="mr-2 text-gray-400" />
             <span className="font-medium">
-              {new Date(c.createdAt || Date.now()).toLocaleDateString()}
+              {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "No Date"}
             </span>
           </div>
         </div>
@@ -301,6 +301,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchCases();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCases = async () => {

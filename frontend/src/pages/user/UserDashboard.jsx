@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 
 export default function UserDashboard() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50">
       {/* Hero Section */}
