@@ -20,7 +20,7 @@ pipeline {
                 script {
                     echo "Building Docker images using docker-compose..."
                     // We use docker-compose to build the images defined in our YAML file
-                    sh 'docker-compose build'
+                    bat 'docker-compose build'
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
                 script {
                     echo "Validating docker-compose configuration..."
                     // Check if the compose file is valid
-                    sh 'docker-compose config -q'
+                    bat 'docker-compose config -q'
                 }
             }
         }
@@ -41,7 +41,7 @@ pipeline {
                     echo "Starting services in detached mode..."
                     // Start the containers (this will restart them if they are already running with changes)
                     // Note: In a real production pipeline, you might deploy to a remote server here instead
-                    sh 'docker-compose up -d'
+                    bat 'docker-compose up -d'
                 }
             }
         }
