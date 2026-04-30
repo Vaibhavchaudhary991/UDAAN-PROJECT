@@ -14,13 +14,15 @@ export default function UserNavbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [userName, setUserName] = useState(() => {
+  const [userName] = useState(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    if (!storedUser) return "Citizen User";
+    try {
       const user = JSON.parse(storedUser);
-      return user.name || user.email || "Citizen User";
+      return user?.name || user?.email || "Citizen User";
+    } catch {
+      return "Citizen User";
     }
-    return "Citizen User";
   });
 
   // 🔹 Logout handler

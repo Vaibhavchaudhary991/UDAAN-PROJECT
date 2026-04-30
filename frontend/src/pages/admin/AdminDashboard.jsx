@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import api from "../../api/api";
 import {
   FaClipboardList,
@@ -301,10 +301,19 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchCases();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchCases]);
+
+  const calculateStats = useCallback((casesData) => {
+    const stats = {
+      total: casesData.length,
+      pending: casesData.filter(c => c.status === "Pending").length,
+      inProgress: casesData.filter(c => c.status === "Case Taken").length,
+      resolved: casesData.filter(c => c.status === "Resolved").length
+    };
+    setStats(stats);
   }, []);
 
-  const fetchCases = async () => {
+  const fetchCases = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/admin/cases");
@@ -316,17 +325,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const calculateStats = (casesData) => {
-    const stats = {
-      total: casesData.length,
-      pending: casesData.filter(c => c.status === "Pending").length,
-      inProgress: casesData.filter(c => c.status === "Case Taken").length,
-      resolved: casesData.filter(c => c.status === "Resolved").length
-    };
-    setStats(stats);
-  };
+  }, [calculateStats]);
 
   const updateCase = async (trackingId, status, adminComment) => {
     try {
