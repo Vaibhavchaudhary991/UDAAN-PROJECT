@@ -8,7 +8,7 @@ import {
   FaHandsHelping,
   FaHeart
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function UserNavbar() {
   const location = useLocation();
