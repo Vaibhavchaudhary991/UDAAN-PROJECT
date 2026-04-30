@@ -25,7 +25,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
 
       # Backend Linting
       - name: Install Backend Dependencies
@@ -152,7 +151,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
 
       - name: Install Backend Dependencies
         run: |
