@@ -1,4 +1,5 @@
 name: MERN CI/CD Pipeline with Docker
+# Trigger run to verify version upgrades
 
 on:
   push:
