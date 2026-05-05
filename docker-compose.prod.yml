@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-  # MongoDB Database (Production)
   mongodb:
     image: mongo:7.0-alpine
     container_name: udaan-mongodb-prod
@@ -11,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: udaan
     ports:
-      - "127.0.0.1:27017:27017" # Only localhost
+      - "127.0.0.1:27017:27017" 
     volumes:
       - mongodb_data_prod:/data/db
       - mongodb_config_prod:/data/configdb
@@ -28,7 +27,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # Backend API (Production)
+  
   backend:
     image: ${DOCKER_USERNAME}/udaan-backend:latest
     container_name: udaan-backend-prod
@@ -63,13 +62,16 @@ services:
         max-size: "10m"
         max-file: "5"
 
-  # Frontend App (Production)
+  
   frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     image: ${DOCKER_USERNAME}/udaan-frontend:latest
     container_name: udaan-frontend-prod
     restart: always
-    environment:
-      VITE_API_URL: ${VITE_API_URL}
     ports:
       - "80:80"
       - "443:443"
@@ -89,25 +91,8 @@ services:
         max-size: "10m"
         max-file: "5"
     volumes:
-      - ./ssl:/etc/nginx/ssl:ro # For SSL certificates
+      - ./ssl:/etc/nginx/ssl:ro
 
-  # Watchtower (Auto-update containers when image updates)
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      WATCHTOWER_CLEANUP: "true"
-      WATCHTOWER_SCHEDULE: "0 2 * * *" # Daily at 2 AM
-    networks:
-      - udaan-network-prod
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
 volumes:
   mongodb_data_prod:

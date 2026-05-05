@@ -1,0 +1,41 @@
+services:
+  # ─── Backend Web Service ────────────────────────────────────────────────────
+  - type: web
+    name: udaan-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # ⚠ Set these in the Render dashboard > Environment > Secret Files
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      # Set this to your Render frontend URL, e.g. https://udaan-frontend.onrender.com
+      - key: FRONTEND_URL
+        sync: false
+
+  # ─── Frontend Static Site ────────────────────────────────────────────────────
+  - type: web
+    name: udaan-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    # VITE_API_URL is read from frontend/.env.production at build time
+    # No envVars needed here — Vite bakes it in during the build above
