@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-  # MongoDB Database (Development)
   mongodb:
     image: mongo:7.0
     container_name: udaan-mongodb-dev
@@ -15,7 +14,7 @@ services:
     volumes:
       - mongodb_data_dev:/data/db
 
-  # Backend API (Development)
+ 
   backend:
     build:
       context: ./backend
@@ -34,10 +33,12 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@ngo.org}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
     depends_on:
       - mongodb
 
-  # Frontend App (Development)
+  
   frontend:
     build:
       context: ./frontend
@@ -46,7 +47,7 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "3000:80" # Map to 3000 locally as well for convenience
+      - "3000:80"
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
     depends_on:
