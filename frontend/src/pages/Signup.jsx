@@ -16,6 +16,13 @@ import {
   FaUsers
 } from "react-icons/fa";
 
+// Missing FaUserPlus icon - using alternative
+const FaUserPlus = ({ className }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 640 512">
+    <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3zM528 240c17.7 0 32 14.3 32 32v48H608c17.7 0 32 14.3 32 32s-14.3 32-32 32H560v48c0 17.7-14.3 32-32 32s-32-14.3-32-32V384H448c-17.7 0-32-14.3-32-32s14.3-32 32-32h48V272c0-17.7 14.3-32 32-32z"/>
+  </svg>
+);
+
 export default function Signup() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -317,10 +324,4 @@ export default function Signup() {
     </div>
   );
 }
-
-// Missing FaUserPlus icon - using alternative
-const FaUserPlus = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 640 512">
-    <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3zM528 240c17.7 0 32 14.3 32 32v48H608c17.7 0 32 14.3 32 32s-14.3 32-32 32H560v48c0 17.7-14.3 32-32 32s-32-14.3-32-32V384H448c-17.7 0-32-14.3-32-32s14.3-32 32-32h48V272c0-17.7 14.3-32 32-32z"/>
-  </svg>
-);
+

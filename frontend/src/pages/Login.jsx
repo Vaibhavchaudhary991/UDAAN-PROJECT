@@ -118,7 +118,7 @@ export default function Login() {
               
               <button
   type="button"
-  onClick={() => navigate("/admin")}
+  onClick={() => navigate("/admin/login")}
   className="
     w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300
     bg-gradient-to-r from-green-600 to-teal-600

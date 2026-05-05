@@ -31,7 +31,7 @@ function App() {
         </Route>
 
         {/* Admin Login */}
-        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* Admin Pages */}
         <Route path="/admin" element={<AdminLayout />}>
