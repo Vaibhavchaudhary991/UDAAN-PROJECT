@@ -2,288 +2,18 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import api from "../../api/api";
 import {
   FaClipboardList,
-  FaUser,
-  FaMapMarkerAlt,
-  FaBriefcase,
-  FaCheckCircle,
-  FaHourglassHalf,
-  FaUsers,
-  FaSave,
   FaShieldAlt,
   FaChartBar,
   FaSearch,
   FaFilter,
-  FaChevronLeft,
-  FaChevronRight,
-  FaEye,
-  FaEdit,
-  FaCalendarAlt
+  FaHourglassHalf,
+  FaCheckCircle,
+  FaUsers
 } from "react-icons/fa";
 
-// Status badge component
-const StatusBadge = ({ status }) => {
-  const getStatusConfig = (status) => {
-    const configs = {
-      "Pending": { color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: FaHourglassHalf },
-      "Case Taken": { color: "bg-blue-100 text-blue-800 border-blue-200", icon: FaUsers },
-      "Resolved": { color: "bg-green-100 text-green-800 border-green-200", icon: FaCheckCircle }
-    };
-    return configs[status] || configs["Pending"];
-  };
-
-  const config = getStatusConfig(status);
-  const Icon = config.icon;
-
-  return (
-    <div className={`inline-flex items-center px-3 py-1 rounded-full border ${config.color}`}>
-      <Icon className="mr-2 text-xs" />
-      <span className="text-xs font-semibold">{status}</span>
-    </div>
-  );
-};
-
-// Case card component
-const CaseCard = ({ case: c, onUpdate }) => {
-  const [status, setStatus] = useState(c.status);
-  const [adminComment, setAdminComment] = useState(c.adminComment || "");
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleSave = () => {
-    onUpdate(c.trackingId, status, adminComment);
-    setIsEditing(false);
-  };
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300 overflow-hidden">
-      {/* Case Header */}
-      <div className="px-6 py-4 border-b border-gray-100">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-1">
-                <StatusBadge status={c.status} />
-                <div className="text-sm font-semibold text-gray-800">
-                  ID: <span className="text-blue-600 font-mono">{c.trackingId}</span>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 truncate">{c.childName}</h3>
-            </div>
-          </div>
-          <div className="text-sm text-gray-500 flex items-center">
-            <FaCalendarAlt className="mr-2 text-gray-400" />
-            <span className="font-medium">
-              {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "No Date"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Case Details */}
-      <div className="px-6 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-blue-50 rounded-lg">
-                <FaUser className="text-blue-600" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Child Details</p>
-                <p className="text-sm font-semibold text-gray-900">{c.childName}</p>
-                <p className="text-xs text-gray-600">Age: {c.age || "Not specified"}</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-green-50 rounded-lg">
-                <FaBriefcase className="text-green-600" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Work Type</p>
-                <p className="text-sm font-semibold text-gray-900">{c.workType}</p>
-                <p className="text-xs text-gray-600">Industry: {c.industry || "General"}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-red-50 rounded-lg">
-                <FaMapMarkerAlt className="text-red-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Location</p>
-                <p className="text-sm font-semibold text-gray-900 truncate">{c.address}</p>
-                <p className="text-xs text-gray-600">
-                  {c.city}, {c.state}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-purple-50 rounded-lg">
-                <FaUser className="text-purple-600" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Reporter</p>
-                <p className="text-sm font-semibold text-gray-900 truncate">{c.userEmail}</p>
-                <p className="text-xs text-gray-600">Contact: {c.contactNumber || "Not provided"}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Case Description</p>
-            <p className="text-sm text-gray-700 line-clamp-3">
-              {c.description || "No description provided"}
-            </p>
-          </div>
-        </div>
-
-        {/* Admin Actions */}
-        <div className="mt-6 pt-6 border-t border-gray-100">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Update Status
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {["Pending", "Case Taken", "Resolved"].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => {
-                        setStatus(option);
-                        setIsEditing(true);
-                      }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        status === option
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Admin Remarks
-                </label>
-                <textarea
-                  value={adminComment}
-                  onChange={(e) => {
-                    setAdminComment(e.target.value);
-                    setIsEditing(true);
-                  }}
-                  placeholder="Add remarks or updates..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  rows="2"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-end">
-              <button
-                onClick={handleSave}
-                disabled={!isEditing}
-                className={`w-full lg:w-auto flex items-center justify-center px-6 py-3 rounded-lg text-sm font-medium transition-all ${
-                  isEditing
-                    ? "bg-gradient-to-r from-blue-600 to-teal-600 text-white hover:shadow-lg transform hover:-translate-y-0.5"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                }`}
-              >
-                <FaSave className="mr-2" />
-                {isEditing ? "Save Updates" : "No Changes"}
-              </button>
-            </div>
-          </div>
-
-          {c.adminComment && !isEditing && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-xs font-medium text-blue-800 mb-1">Previous Remarks</p>
-              <p className="text-sm text-blue-900">{c.adminComment}</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Pagination component
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  const pages = useMemo(() => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pageNumbers.push(i);
-    }
-    return pageNumbers;
-  }, [totalPages]);
-
-  if (totalPages <= 1) return null;
-
-  return (
-    <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
-      <div className="flex flex-1 justify-between sm:hidden">
-        <button
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
-      </div>
-      <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-gray-700">
-            Showing page <span className="font-medium">{currentPage}</span> of{" "}
-            <span className="font-medium">{totalPages}</span>
-          </p>
-        </div>
-        <div>
-          <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm">
-            <button
-              onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FaChevronLeft className="h-4 w-4" />
-            </button>
-            {pages.map((page) => (
-              <button
-                key={page}
-                onClick={() => onPageChange(page)}
-                className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                  currentPage === page
-                    ? "z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FaChevronRight className="h-4 w-4" />
-            </button>
-          </nav>
-        </div>
-      </div>
-    </div>
-  );
-};
+// Components
+import CaseCard from "../../components/admin/CaseCard";
+import Pagination from "../../components/admin/Pagination";
 
 export default function AdminDashboard() {
   const [cases, setCases] = useState([]);
@@ -298,10 +28,6 @@ export default function AdminDashboard() {
     inProgress: 0,
     resolved: 0
   });
-
-  useEffect(() => {
-    fetchCases();
-  }, [fetchCases]);
 
   const calculateStats = useCallback((casesData) => {
     const stats = {
@@ -326,6 +52,10 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   }, [calculateStats]);
+
+  useEffect(() => {
+    fetchCases();
+  }, [fetchCases]);
 
   const updateCase = async (trackingId, status, adminComment) => {
     try {
@@ -507,7 +237,7 @@ export default function AdminDashboard() {
         {/* Cases List */}
         <div className="space-y-6">
           {paginatedCases.map((c) => (
-            <CaseCard key={c._id} case={c} onUpdate={updateCase} />
+            <CaseCard key={c._id} caseData={c} onUpdate={updateCase} />
           ))}
 
           {filteredCases.length === 0 && (
