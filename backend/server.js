@@ -11,7 +11,7 @@ const app = express();
 
 // Allow requests from the frontend URL (set via environment variable on Render)
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL?.replace(/\/$/, ""), // strip trailing slash
   "http://localhost:5173",
   "http://localhost:3000",
 ].filter(Boolean); // remove undefined/empty values
