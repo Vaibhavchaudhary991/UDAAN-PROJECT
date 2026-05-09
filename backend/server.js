@@ -14,6 +14,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL?.replace(/\/$/, ""), // strip trailing slash
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://udaan-project-black.vercel.app",
 ].filter(Boolean); // remove undefined/empty values
 
 app.use(
