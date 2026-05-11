@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api/api";
+import { GoogleLogin } from "@react-oauth/google";
 import {
   FaUser,
   FaLock,
@@ -48,6 +49,29 @@ export default function Login() {
       navigate("/user/dashboard");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post("/auth/google", { token: credentialResponse.credential });
+      
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: res.data.user.name || res.data.user.email,
+          email: res.data.user.email,
+        })
+      );
+      
+      alert("Google Login successful");
+      navigate("/user/dashboard");
+    } catch (err) {
+      alert(err.response?.data?.message || "Google Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -235,6 +259,27 @@ export default function Login() {
                 )}
               </button>
             </form>
+
+            {/* Google Login Section */}
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                </div>
+              </div>
+              
+              <div className="mt-6 flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleLogin}
+                  onError={() => {
+                    alert("Google Login Failed");
+                  }}
+                />
+              </div>
+            </div>
 
             {/* Sign Up Link */}
             <div className="mt-8 text-center">

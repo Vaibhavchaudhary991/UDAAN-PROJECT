@@ -66,6 +66,11 @@ const caseSchema = new mongoose.Schema(
     // Admin remarks visible to user
     adminComment: {
       type: String
+    },
+
+    // Optional image of child labour
+    image: {
+      type: String
     }
   },
   {

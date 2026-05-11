@@ -98,9 +98,25 @@ const CaseCard = ({ caseData: c, onUpdate }) => {
 
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Case Description</p>
-            <p className="text-sm text-gray-700 line-clamp-3">
+            <p className="text-sm text-gray-700 mb-4">
               {c.description || "No description provided"}
             </p>
+            {c.image && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Evidence Image</p>
+                <div className="relative group">
+                  <img 
+                    src={c.image} 
+                    alt="Case Evidence" 
+                    className="w-full h-32 object-cover rounded-lg border border-gray-200 cursor-zoom-in hover:opacity-90 transition-opacity"
+                    onClick={() => window.open(c.image, '_blank')}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <span className="bg-black/50 text-white text-xs px-2 py-1 rounded">Click to view full size</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

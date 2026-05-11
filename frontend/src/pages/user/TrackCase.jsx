@@ -12,7 +12,8 @@ import {
   FaExclamationCircle,
   FaHourglassHalf,
   FaCopy,
-  FaQrcode
+  FaQrcode,
+  FaImage
 } from "react-icons/fa";
 
 export default function TrackCase() {
@@ -244,6 +245,20 @@ export default function TrackCase() {
                       </button>
                     </div>
                   </div>
+
+                  {caseData.image && (
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 md:col-span-2">
+                      <div className="flex items-center mb-3">
+                        <FaImage className="text-indigo-600 mr-2" />
+                        <h4 className="font-semibold text-gray-700">Uploaded Evidence</h4>
+                      </div>
+                      <img 
+                        src={caseData.image} 
+                        alt="Case Evidence" 
+                        className="w-full max-h-96 object-contain rounded-lg border border-gray-200"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Admin Update */}

@@ -3,9 +3,9 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Declare build-time argument (passed via --build-arg or docker-compose build args)
+
 ARG VITE_API_URL
-# Expose it as an ENV so Vite picks it up during `npm run build`
+
 ENV VITE_API_URL=$VITE_API_URL
 
 COPY package*.json ./

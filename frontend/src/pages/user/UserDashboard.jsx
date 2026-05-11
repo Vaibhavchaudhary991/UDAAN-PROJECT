@@ -39,14 +39,14 @@ export default function UserDashboard() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  onClick={() => navigate("report")}
+                  onClick={() => navigate("/user/report")}
                   className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center"
                 >
                   <FaFlag className="mr-3" />
                   Report a Case
                 </button>
                 <button
-                  onClick={() => navigate("track")}
+                  onClick={() => navigate("/user/track")}
                   className="bg-transparent border-2 border-white hover:bg-white/10 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center"
                 >
                   <FaSearch className="mr-3" />

@@ -58,6 +58,7 @@ exports.createCase = async (req, res) => {
       address,
       city,
       state,
+      image: req.body.image, // ✅ Optional image
       coordinates: {
         lat,
         lng
