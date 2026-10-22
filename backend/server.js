@@ -22,7 +22,11 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        /^https:\/\/.*\.vercel\.app$/.test(origin)
+      ) {
         return callback(null, true);
       }
       return callback(new Error("CORS: Origin not allowed — " + origin));
@@ -30,6 +34,32 @@ app.use(
     credentials: true,
   })
 );
+
+// Root endpoint
+app.get("/", (req, res) => {
+  const dbStatus = ["disconnected", "connected", "connecting", "disconnecting"][
+    mongoose.connection.readyState
+  ] || "unknown";
+
+  res.json({
+    status: "online",
+    message: "Udaan Backend API is running",
+    database: dbStatus,
+  });
+});
+
+// Health check endpoint to verify backend and database connectivity
+app.get("/api/health", (req, res) => {
+  const dbStatus = ["disconnected", "connected", "connecting", "disconnecting"][
+    mongoose.connection.readyState
+  ] || "unknown";
+
+  res.json({
+    status: "ok",
+    database: dbStatus,
+    timestamp: new Date().toISOString()
+  });
+});
 
 app.use(express.json());
 
@@ -46,9 +76,20 @@ if (!MONGO_URI) {
   process.exit(1);
 }
 
-mongoose.connect(MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    console.log("✅ MongoDB connected successfully");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err.message);
+    console.log("Retrying MongoDB connection in 5 seconds...");
+    setTimeout(connectDB, 5000);
+  }
+};
+
+connectDB();
 
 app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)
