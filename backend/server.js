@@ -56,10 +56,23 @@ app.get("/api/health", (req, res) => {
     mongoose.connection.readyState
   ] || "unknown";
 
+  const rawUri = process.env.MONGO_URI || "";
+  const hasLeadingQuote = rawUri.startsWith('"') || rawUri.startsWith("'");
+  const hasTrailingQuote = rawUri.endsWith('"') || rawUri.endsWith("'");
+  const hasWhitespace = rawUri !== rawUri.trim();
+
   res.json({
     status: "ok",
     database: dbStatus,
     error: lastDbError,
+    uriDiagnostics: {
+      isSet: !!rawUri,
+      length: rawUri.length,
+      hasLeadingQuote,
+      hasTrailingQuote,
+      hasWhitespace,
+      maskedUri: rawUri.replace(/:([^@]+)@/, (m, pwd) => `:***(length:${pwd.length})@`),
+    },
     timestamp: new Date().toISOString()
   });
 });
