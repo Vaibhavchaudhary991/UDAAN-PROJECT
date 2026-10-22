@@ -56,25 +56,10 @@ app.get("/api/health", (req, res) => {
     mongoose.connection.readyState
   ] || "unknown";
 
-  const rawUri = process.env.MONGO_URI || "";
-  const match = rawUri.match(/mongodb\+srv:\/\/([^:]+):([^@]+)@/);
-  const userLen = match ? match[1].length : 0;
-  const passLen = match ? match[2].length : 0;
-  const hasHiddenChars = /[\r\n\t]/.test(rawUri);
-
   res.json({
     status: "ok",
     database: dbStatus,
     error: lastDbError,
-    uriDiagnostics: {
-      isSet: !!rawUri,
-      length: rawUri.length,
-      userLen,
-      passLen,
-      hasHiddenChars,
-      expectedUserLen: 28,
-      expectedPassLen: 5,
-    },
     timestamp: new Date().toISOString()
   });
 });
