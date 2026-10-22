@@ -57,9 +57,10 @@ app.get("/api/health", (req, res) => {
   ] || "unknown";
 
   const rawUri = process.env.MONGO_URI || "";
-  const hasLeadingQuote = rawUri.startsWith('"') || rawUri.startsWith("'");
-  const hasTrailingQuote = rawUri.endsWith('"') || rawUri.endsWith("'");
-  const hasWhitespace = rawUri !== rawUri.trim();
+  const match = rawUri.match(/mongodb\+srv:\/\/([^:]+):([^@]+)@/);
+  const userLen = match ? match[1].length : 0;
+  const passLen = match ? match[2].length : 0;
+  const hasHiddenChars = /[\r\n\t]/.test(rawUri);
 
   res.json({
     status: "ok",
@@ -68,10 +69,11 @@ app.get("/api/health", (req, res) => {
     uriDiagnostics: {
       isSet: !!rawUri,
       length: rawUri.length,
-      hasLeadingQuote,
-      hasTrailingQuote,
-      hasWhitespace,
-      maskedUri: rawUri.replace(/:([^@]+)@/, (m, pwd) => `:***(length:${pwd.length})@`),
+      userLen,
+      passLen,
+      hasHiddenChars,
+      expectedUserLen: 28,
+      expectedPassLen: 5,
     },
     timestamp: new Date().toISOString()
   });
