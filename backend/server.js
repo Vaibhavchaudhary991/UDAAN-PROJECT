@@ -48,6 +48,8 @@ app.get("/", (req, res) => {
   });
 });
 
+let lastDbError = null;
+
 // Health check endpoint to verify backend and database connectivity
 app.get("/api/health", (req, res) => {
   const dbStatus = ["disconnected", "connected", "connecting", "disconnecting"][
@@ -57,6 +59,7 @@ app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
     database: dbStatus,
+    error: lastDbError,
     timestamp: new Date().toISOString()
   });
 });
@@ -81,8 +84,10 @@ const connectDB = async () => {
     await mongoose.connect(MONGO_URI, {
       serverSelectionTimeoutMS: 5000,
     });
+    lastDbError = null;
     console.log("✅ MongoDB connected successfully");
   } catch (err) {
+    lastDbError = err.message;
     console.error("❌ MongoDB connection error:", err.message);
     console.log("Retrying MongoDB connection in 5 seconds...");
     setTimeout(connectDB, 5000);
