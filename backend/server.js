@@ -56,19 +56,10 @@ app.get("/api/health", (req, res) => {
     mongoose.connection.readyState
   ] || "unknown";
 
-  const rawUri = process.env.MONGO_URI || "";
-  const match = rawUri.match(/mongodb\+srv:\/\/([^:]+):([^@]+)@/);
-  const u = match ? match[1] : "";
-  const p = match ? match[2] : "";
-
   res.json({
     status: "ok",
     database: dbStatus,
     error: lastDbError,
-    debug: {
-      user: u ? `${u.slice(0, 5)}... (len: ${u.length})` : "missing",
-      passMasked: p ? `${p[0]}***${p[p.length - 1]} (len: ${p.length})` : "missing",
-    },
     timestamp: new Date().toISOString()
   });
 });
